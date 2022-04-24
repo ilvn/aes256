@@ -164,10 +164,14 @@ rj_sbox(uint8_t x)
     uint8_t y, sb;
 
     sb = y = gf_mulinv(x);
-    y = (uint8_t)(y << 1) | (y >> 7), sb ^= y;
-    y = (uint8_t)(y << 1) | (y >> 7), sb ^= y;
-    y = (uint8_t)(y << 1) | (y >> 7), sb ^= y;
-    y = (uint8_t)(y << 1) | (y >> 7), sb ^= y;
+    y = (uint8_t)(y << 1) | (y >> 7);
+    sb ^= y;
+    y = (uint8_t)(y << 1) | (y >> 7);
+    sb ^= y;
+    y = (uint8_t)(y << 1) | (y >> 7);
+    sb ^= y;
+    y = (uint8_t)(y << 1) | (y >> 7);
+    sb ^= y;
 
     return (sb ^ 0x63);
 } /* rj_sbox */

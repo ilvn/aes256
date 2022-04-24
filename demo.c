@@ -1,6 +1,6 @@
-/*  
+/*
 *   Byte-oriented AES-256 implementation.
-*   All lookup tables replaced with 'on the fly' calculations. 
+*   All lookup tables replaced with 'on the fly' calculations.
 *
 *   Copyright (c) 2007 Ilya O. Levin, http://www.literatecode.com
 *
@@ -21,19 +21,24 @@
 #include "aes256.h"
 
 #define DUMP(s, i, buf, sz)  {printf(s);                   \
-                              for (i = 0; i < (sz);i++)    \
-                                  printf("%02x ", buf[i]); \
-                              printf("\n");}
+        for (i = 0; i < (sz);i++)    \
+            printf("%02x ", buf[i]); \
+        printf("\n");}
 
-int main (int argc, char *argv[])
+int
+main(void)
 {
-    aes256_context ctx; 
+    aes256_context ctx;
     uint8_t key[32];
     uint8_t buf[16], i;
 
     /* put a test vector */
-    for (i = 0; i < sizeof(buf);i++) buf[i] = i * 16 + i;
-    for (i = 0; i < sizeof(key);i++) key[i] = i;
+    for (i = 0; i < sizeof(buf); i++) {
+        buf[i] = i * 16 + i;
+    }
+    for (i = 0; i < sizeof(key); i++) {
+        key[i] = i;
+    }
 
     DUMP("txt: ", i, buf, sizeof(buf));
     DUMP("key: ", i, key, sizeof(key));

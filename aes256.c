@@ -129,15 +129,12 @@ gf_alog(uint8_t x) /* calculate anti-logarithm gen 3 */
 static uint8_t
 gf_log(uint8_t x) /* calculate logarithm gen 3 */
 {
-    uint8_t y, i = 0;
+    uint8_t y = 1, i = 0;
 
     if (0 != x) {
-        for (i = 1, y = 1; i > 0; i++) {
+        do {
             y ^= rj_xtime(y);
-            if (y == x) {
-                break;
-            }
-        }
+        } while ((++i != 0xff) && (y != x));
     }
 
     return i;

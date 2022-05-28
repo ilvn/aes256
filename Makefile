@@ -44,7 +44,7 @@ verify: demo.c aes256.c
 	$(CBMC) $^ -D_cbmc_ $(if $(FUNC),--function $(FUNC),) $(USE_TABLES) \
 		--unwind 64 --partial-loops \
 		--bounds-check \
-		--memory-leak-check `cbmc --help | grep '\--pointer-' | cut -d' ' -f2` \
+		--memory-leak-check `$(CBMC) --help | grep '\--pointer-' | cut -d' ' -f2` \
 		--div-by-zero-check --conversion-check \
 		--signed-overflow-check --unsigned-overflow-check \
 		--undefined-shift-check --float-overflow-check

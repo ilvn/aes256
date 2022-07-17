@@ -21,11 +21,13 @@ This source code gives you a codebook, an ECB core that works
 on a 16-byte block, and it is up to you to choose and implement
 an appropriate [block cipher mode](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation) yourself.
 
+Check the [ctr](ctr) directory for a counter mode complementary implementation.  
+
 ## Portablility
 
 I try my best to keep this source code portable. But supporting
 a wide range of esoteric or long-obsolete compilers is no longer
-a priority. Take a look at [the basic edition](https://github.com/ilvn/aes256/releases/tag/basic) if you still need
+a priority. Look at [the basic edition](https://github.com/ilvn/aes256/releases/tag/basic) if you still need
 that support and can't use the current variant. 
 
 The primary development is with `clang` and `GCC` on macOS and 

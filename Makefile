@@ -17,7 +17,7 @@
 
 CC := $(if $(shell which clang),clang,gcc)
 CBMC := cbmc
-CFLAGS := -O3 -Wall -Wextra -pedantic
+CFLAGS := -O3 -ffast-math -Wall -Wextra -pedantic
 override USE_TABLES := $(if $(findstring fast,$(MAKECMDGOALS)),-DBACK_TO_TABLES,)
 
 .PHONY: help aes256 clean fast verify

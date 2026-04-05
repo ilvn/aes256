@@ -34,10 +34,10 @@ typedef union aes256ctr_context {
 } aes256ctr_ctx_t;
 
 
-/// Initialize a counter mode context.
-/// @param[in] key Pointer to an encryption key.
-/// @param[in] blk Pointer to a counter block.
-/// @return the initialized context structure.
+/// Initialize an AES-256-CTR context with key and counter block.
+/// @param[in] key Pointer to the 256-bit (32-byte) encryption key.
+/// @param[in] blk Pointer to the RFC 3686 counter block.
+/// @return The initialized context structure.
 ///
 aes256ctr_ctx_t aes256ctr_init(
     aes256_key_t *key,
@@ -45,10 +45,10 @@ aes256ctr_ctx_t aes256ctr_init(
 );
 
 
-/// (Re)set a counter block within the context.
-/// @param[in,out] ctx Pointer to the initialized context variable.
-/// @param[in] blk Pointer to a source counter block.
-/// @return AES_SUCCESS on success, AES_ERROR on failure.
+/// Set or reset the counter block within the context.
+/// @param[in,out] ctx Pointer to an initialized context structure.
+/// @param[in] blk Pointer to the RFC 3686 counter block to set.
+/// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` or `blk` is `NULL`.
 ///
 uint8_t aes256ctr_setblk(
     aes256ctr_ctx_t *ctx,
@@ -56,11 +56,11 @@ uint8_t aes256ctr_setblk(
 );
 
 
-/// Encrypt data, in place.
-/// @param[in,out] ctx Pointer to the initialized context variable.
-/// @param[in,out] buf Pointer to a data buffer.
-/// @param[in] size Data buffer size in bytes.
-/// @return AES_SUCCESS on success, AES_ERROR on failure.
+/// Encrypt or decrypt data in place using AES-256-CTR mode.
+/// @param[in,out] ctx Pointer to an initialized context structure.
+/// @param[in,out] buf Pointer to the data buffer.
+/// @param[in] size Size of the data buffer in bytes.
+/// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` or `buf` is `NULL`.
 ///
 uint8_t aes256ctr_encrypt(
     aes256ctr_ctx_t *ctx,
@@ -70,9 +70,9 @@ uint8_t aes256ctr_encrypt(
 
 #define aes256ctr_decrypt aes256ctr_encrypt
 
-/// Clear the context.
-/// @param[in,out] ctx Pointer to the context variable.
-/// @return AES_SUCCESS on success, AES_ERROR on failure.
+/// Securely clear the context and zero all key material.
+/// @param[in,out] ctx Pointer to the context structure to clear.
+/// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` is `NULL`.
 ///
 uint8_t aes256ctr_done(
     aes256ctr_ctx_t *ctx

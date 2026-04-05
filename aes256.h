@@ -43,39 +43,38 @@ typedef struct aes256_context_t {
 } aes256_context_t;
 
 
-/// @function aes256_init
-/// @brief Initialize a context structure.
-/// @param[in,out] ctx Pointer to a pre-allocated context structure.
-/// @param[in] key Pointer to a key initialized buffer.
-/// @return AES_SUCCESS on success, AES_ERROR on failure.
+/// Initialize the AES-256 context with the provided key.
+/// @param[out] ctx Pointer to the context structure to initialize.
+/// @param[in] key Pointer to the 256-bit (32-byte) encryption key.
+/// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` or `key` is `NULL`.
 ///
 uint8_t aes256_init(
     aes256_context_t *ctx,
     aes256_key_t *key
 );
 
-/// @brief Clear the context structure.
-/// @param[in,out] ctx Pointer to a context structure.
-/// @return AES_SUCCESS on success, AES_ERROR on failure.
+/// Securely clear the context and zero all key material.
+/// @param[in,out] ctx Pointer to the context structure to clear.
+/// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` is `NULL`.
 ///
 uint8_t aes256_done(
     aes256_context_t *ctx
 );
 
-/// @brief Encrypt a single data block in place.
+/// Encrypt a single 16-byte block using AES-256 in ECB mode.
 /// @param[in] ctx Pointer to an initialized context structure.
-/// @param[in,out] buf Plaintext in, ciphertext out.
-/// @return AES_SUCCESS on success, AES_ERROR on failure.
+/// @param[in,out] buf Block buffer: plaintext in, ciphertext out.
+/// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` or `buf` is `NULL`.
 ///
 uint8_t aes256_encrypt_ecb(
     aes256_context_t *ctx,
     aes256_blk_t *buf
 );
 
-/// @brief Decrypt a single data block in place.
+/// Decrypt a single 16-byte block using AES-256 in ECB mode.
 /// @param[in] ctx Pointer to an initialized context structure.
-/// @param[in,out] buf Ciphertext in, plaintext out.
-/// @return AES_SUCCESS on success, AES_ERROR on failure.
+/// @param[in,out] buf Block buffer: ciphertext in, plaintext out.
+/// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` or `buf` is `NULL`.
 ///
 uint8_t aes256_decrypt_ecb(
     aes256_context_t *ctx,

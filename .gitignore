@@ -1,0 +1,17 @@
+*.out
+*.a
+*.o
+*.swp
+*.pyc
+*.sym
+*.xcworkspacedata
+.DS_Store
+TAGS
+project.xcworkspace/
+xcuserdata/
+xcshareddata/
+.vscode
+__pycache__/
+build/
+bin/
+.nova

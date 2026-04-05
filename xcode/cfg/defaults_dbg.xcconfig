@@ -1,0 +1,14 @@
+//
+// Debug variant of the default Xcode settings for a macosx CLI target
+// Some Xcode versions occasionally have trouble with “[config=]” method,
+// so, we use separate files for Debug and Release variants.
+//
+#include "defaults.xcconfig"
+
+DEBUG_INFORMATION_FORMAT = dwarf
+ENABLE_TESTABILITY = YES
+GCC_DYNAMIC_NO_PIC = NO
+GCC_OPTIMIZATION_LEVEL = 0
+GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1 $(inherited)
+MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE
+ONLY_ACTIVE_ARCH = YES

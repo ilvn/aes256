@@ -1,0 +1,4 @@
+#include "defaults_dbg.xcconfig"
+#include? "puristic.xcconfig"
+
+GCC_OPTIMIZATION_LEVEL = 0

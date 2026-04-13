@@ -22,8 +22,8 @@
 #ifndef AES256_H__
 #define AES256_H__ 1
 
-#ifndef uint8_t
-#define uint8_t  unsigned char
+#ifndef u8_t
+#define u8_t unsigned char
 #endif
 
 #ifdef __cplusplus
@@ -33,8 +33,8 @@ extern "C" {
 #define AES_SUCCESS (0)
 #define AES_ERROR   (1)
 
-typedef struct aes256_key_t { uint8_t raw[32]; } aes256_key_t;
-typedef struct aes256_blk_t { uint8_t raw[16]; } aes256_blk_t;
+typedef struct aes256_key_t { u8_t raw[32]; } aes256_key_t;
+typedef struct aes256_blk_t { u8_t raw[16]; } aes256_blk_t;
 
 typedef struct aes256_context_t {
     aes256_key_t key;
@@ -48,7 +48,7 @@ typedef struct aes256_context_t {
 /// @param[in] key Pointer to the 256-bit (32-byte) encryption key.
 /// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` or `key` is `NULL`.
 ///
-uint8_t aes256_init(
+u8_t aes256_init(
     aes256_context_t *ctx,
     aes256_key_t *key
 );
@@ -57,7 +57,7 @@ uint8_t aes256_init(
 /// @param[in,out] ctx Pointer to the context structure to clear.
 /// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` is `NULL`.
 ///
-uint8_t aes256_done(
+u8_t aes256_done(
     aes256_context_t *ctx
 );
 
@@ -66,7 +66,7 @@ uint8_t aes256_done(
 /// @param[in,out] buf Block buffer: plaintext in, ciphertext out.
 /// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` or `buf` is `NULL`.
 ///
-uint8_t aes256_encrypt_ecb(
+u8_t aes256_encrypt_ecb(
     aes256_context_t *ctx,
     aes256_blk_t *buf
 );
@@ -76,7 +76,7 @@ uint8_t aes256_encrypt_ecb(
 /// @param[in,out] buf Block buffer: ciphertext in, plaintext out.
 /// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` or `buf` is `NULL`.
 ///
-uint8_t aes256_decrypt_ecb(
+u8_t aes256_decrypt_ecb(
     aes256_context_t *ctx,
     aes256_blk_t *buf
 );

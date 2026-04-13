@@ -10,16 +10,16 @@
 #include "aes256ctr.h"
 
 // -----------------------------------------------------------------------------
-static inline uint8_t
-_inc_b(uint8_t b)
+static inline u8_t
+_inc_b(u8_t b)
 {
     return ((b == 0xff) ? 0 : (1 + b));
 } // _inc_b
 
 
 // -----------------------------------------------------------------------------
-static inline uint8_t
-_inc_ctr(uint8_t val[static 4])
+static inline u8_t
+_inc_ctr(u8_t val[static 4])
 {
     if (0 == (val[3] = _inc_b(val[3])))
         if (0 == (val[2] = _inc_b(val[2])))
@@ -31,7 +31,7 @@ _inc_ctr(uint8_t val[static 4])
 
 
 // -----------------------------------------------------------------------------
-static uint8_t
+static u8_t
 _clock_keystream(aes256ctr_ctx_t *ctx, aes256_blk_t *kb)
 {
     *kb = *((aes256_blk_t *)&ctx->ctr.blk);
@@ -42,7 +42,7 @@ _clock_keystream(aes256ctr_ctx_t *ctx, aes256_blk_t *kb)
 
 
 // -----------------------------------------------------------------------------
-uint8_t
+u8_t
 aes256ctr_setblk(aes256ctr_ctx_t *ctx, rfc3686_blk_t *blk)
 {
     if ((NULL != ctx) && (NULL != blk)) {
@@ -70,8 +70,8 @@ aes256ctr_init(aes256_key_t *key, rfc3686_blk_t *blk)
 
 
 // -----------------------------------------------------------------------------
-uint8_t
-aes256ctr_encrypt(aes256ctr_ctx_t *ctx, uint8_t *buf, size_t size)
+u8_t
+aes256ctr_encrypt(aes256ctr_ctx_t *ctx, u8_t *buf, size_t size)
 {
     if ((NULL != ctx) && (NULL != buf)) {
         aes256_blk_t ctrkey;
@@ -92,7 +92,7 @@ aes256ctr_encrypt(aes256ctr_ctx_t *ctx, uint8_t *buf, size_t size)
 
 
 // -----------------------------------------------------------------------------
-uint8_t
+u8_t
 aes256ctr_done(aes256ctr_ctx_t *ctx)
 {
     return (NULL == ctx) ? AES_ERROR : aes256_done(&ctx->ecb);
@@ -110,12 +110,12 @@ aes256ctr_done(aes256ctr_ctx_t *ctx)
 int
 main(void)
 {
-    static const uint8_t kav[] = { // RFC3686 Test Vector #9
+    static const u8_t kav[] = { // RFC3686 Test Vector #9
         0xEB, 0x6C, 0x52, 0x82, 0x1D, 0x0B, 0xBB, 0xF7, 0xCE, 0x75, 0x94, 0x46,
         0x2A, 0xCA, 0x4F, 0xAA, 0xB4, 0x07, 0xDF, 0x86, 0x65, 0x69, 0xFD, 0x07,
         0xF4, 0x8C, 0xC0, 0xB5, 0x83, 0xD6, 0x07, 0x1F, 0x1E, 0xC0, 0xE6, 0xB8
     };
-    uint8_t buf[] = {
+    u8_t buf[] = {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
         0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
         0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23
@@ -132,7 +132,7 @@ main(void)
         .ctr = {0x00, 0x00, 0x00, 0x01}
     };
 
-    uint8_t ref[sizeof(buf)];
+    u8_t ref[sizeof(buf)];
     memcpy(ref, buf, sizeof(ref));
 
     aes256ctr_ctx_t ctx = aes256ctr_init(&key, &ctr);

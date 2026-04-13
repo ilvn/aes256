@@ -19,9 +19,9 @@ extern "C" {
 #endif
 
 typedef struct rfc3686_blk {
-    uint8_t nonce[4];
-    uint8_t iv[8];
-    uint8_t ctr[4];
+    u8_t nonce[4];
+    u8_t iv[8];
+    u8_t ctr[4];
 } rfc3686_blk_t;
 
 typedef union aes256ctr_context {
@@ -50,7 +50,7 @@ aes256ctr_ctx_t aes256ctr_init(
 /// @param[in] blk Pointer to the RFC 3686 counter block to set.
 /// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` or `blk` is `NULL`.
 ///
-uint8_t aes256ctr_setblk(
+u8_t aes256ctr_setblk(
     aes256ctr_ctx_t *ctx,
     rfc3686_blk_t *blk
 );
@@ -62,9 +62,9 @@ uint8_t aes256ctr_setblk(
 /// @param[in] size Size of the data buffer in bytes.
 /// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` or `buf` is `NULL`.
 ///
-uint8_t aes256ctr_encrypt(
+u8_t aes256ctr_encrypt(
     aes256ctr_ctx_t *ctx,
-    uint8_t *buf,
+    u8_t *buf,
     size_t size
 );
 
@@ -74,7 +74,7 @@ uint8_t aes256ctr_encrypt(
 /// @param[in,out] ctx Pointer to the context structure to clear.
 /// @return `AES_SUCCESS` on success, `AES_ERROR` if `ctx` is `NULL`.
 ///
-uint8_t aes256ctr_done(
+u8_t aes256ctr_done(
     aes256ctr_ctx_t *ctx
 );
 

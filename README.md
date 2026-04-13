@@ -31,6 +31,15 @@ if you still need that support and cannot use the current version.
 
 The primary development is with `clang` and `GCC` on macOS and Linux platforms.
 
+## Security
+
+Consider these:
+
+*  Don’t re-use the `SHL8` macro elsewhere unless `n` is never 0.
+   You'll get a potential UB otherwise.
+*  Your modern compiler can optimize out `aes256_done`. Make your context
+   volatile, use `memset_s` or `explicit_bzero` where available.
+
 ## Correctness
 
 ### Test Vectors

@@ -23,8 +23,8 @@
 
 static struct {
     aes256_key_t key;
-    uint8_t pt[16];
-    uint8_t ct[16];
+    u8_t pt[16];
+    u8_t ct[16];
 } test[] = {
     {
         .key.raw = {
@@ -147,7 +147,7 @@ static struct {
     },
 };
 
-static const uint8_t total_tests = 0x7f & (sizeof(test) / sizeof(test[0]));
+static const u8_t total_tests = 0x7f & (sizeof(test) / sizeof(test[0]));
 
 
 int
@@ -156,7 +156,7 @@ main(void)
     aes256_context_t ctx;
     aes256_blk_t buf;
 
-    for (uint8_t n = 0; n < total_tests; n++) {
+    for (u8_t n = 0; n < total_tests; n++) {
         aes256_init(&ctx, &test[n].key);
         memcpy(&buf, test[n].pt, sizeof(buf));
 

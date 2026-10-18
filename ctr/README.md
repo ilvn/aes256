@@ -5,10 +5,10 @@ byte-oriented AES-256 implementation.
 
 ## Usage
 
-Use `make obj` to compile the object file or `make demo` to build
+Use `make obj` to compile the object file or `make test` to build
 the test executable.
 
-Building the demo executable requires `aes256.c` and `aes256.h`
-in the parent directory. You may use `AESDIR` with `make demo`
-to specify a different location.
+Both targets require `aes256.h` in the parent directory, and `make test`
+also requires `aes256.c`. You may use `AESDIR` to specify a different
+location.
 

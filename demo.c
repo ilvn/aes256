@@ -1,27 +1,18 @@
 //
 // A compact byte-oriented AES-256 implementation.
-// This demo uses a few known-answer tests from FIPS-197 Appendix C.3,
-// NIST documents SP800-38A and AESAVS.
+// This demo uses a few known-answer tests from FIPS 197 Appendix C.3,
+// NIST documents SP 800-38A and AESAVS.
 //
 // Copyright (c) 2022 Ilia Levin (ilia@levin.sg)
 //
-// Permission to use, copy, modify, and distribute this software for any
-// purpose with or without fee is hereby granted, provided that the above
-// copyright notice and this permission notice appear in all copies.
-//
-// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-// ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-// OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+// This source code is licensed under the terms of the MIT license.
+// For a copy, see <https://opensource.org/licenses/MIT>.
 
 #include <stdio.h>
 #include <string.h>
 #include "aes256.h"
 
-static struct {
+static const struct {
     aes256_key_t key;
     u8_t pt[16];
     u8_t ct[16];
@@ -147,9 +138,9 @@ static struct {
     },
 };
 
-static const u8_t total_tests = 0x7f & (sizeof(test) / sizeof(test[0]));
+static const u8_t total_tests = 0x7f & (sizeof(test) / sizeof(test[0])); // <128
 
-
+// -----------------------------------------------------------------------------
 int
 main(void)
 {

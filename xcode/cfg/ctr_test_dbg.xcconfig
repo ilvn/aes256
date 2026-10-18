@@ -1,0 +1,3 @@
+#include "demo_dbg.xcconfig"
+
+OTHER_CFLAGS = $(inherited) -DAES256CTR_SELF_TEST_

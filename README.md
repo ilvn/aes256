@@ -29,27 +29,29 @@ a wide range of esoteric or long-obsolete compilers is no longer
 a priority. Look at [the basic edition](https://github.com/ilvn/aes256/releases/tag/basic)
 if you still need that support and cannot use the current version.
 
-The primary development is with `clang` and `GCC` on macOS and Linux platforms.
+The primary development is with Clang and GCC on macOS and Linux platforms.
 
 ## Security
 
-Consider these:
+`aes256_done` clears the context through volatile stores, so the compiler
+can't optimize it out. It only clears the context itself, though. Key
+material that was copied elsewhere (your own key buffer, struct copies,
+register spills) stays in memory. Clear your key buffer with `memset_s`
+or `explicit_bzero` where available.
 
-*  Don’t re-use the `SHL8` macro elsewhere unless `n` is never 0.
-   You'll get a potential UB otherwise.
-*  Your modern compiler can optimize out `aes256_done`. Make your context
-   volatile, use `memset_s` or `explicit_bzero` where available.
+Encryption and decryption modify the context. Do not share a context
+between threads without locking.
 
 ## Correctness
 
 ### Test Vectors
 
-The [demo.c](demo.c) uses known-answer tests from several official
+[demo.c](demo.c) uses known-answer tests from several official
 documents to verify this is a valid AES-256 implementation.
 
 ### Formal Verification
 
-We rely on [C Bounded Model Checker](http://www.cprover.org/cbmc/)
+We rely on the [C Bounded Model Checker (CBMC)](https://www.cprover.org/cbmc/)
 to formally verify code properties.
 
 Use `make verify` to verify all the `aes256`-prefixed functions
@@ -67,7 +69,7 @@ I initially wrote this source code in 2007 in response to a request
 from colleagues for a compact implementation of AES-256 in C.
 
 They didn't worry about performance; they only needed something
-portable to produce small code without using Assembly language.
+portable to produce small code without using assembly language.
 
 Unfortunately, none of the publicly available AES implementations
 at the time fit the bill.
@@ -83,7 +85,7 @@ a faster version with pre-calculated lookup tables.
 
 ### Legacy
 
-The original version of the source code from [http://www.literatecode.com](http://literatecode.com)
+The original version of the source code from [http://www.literatecode.com](http://www.literatecode.com)
 is available under the tag [legacy](https://github.com/ilvn/aes256/releases/tag/legacy).
 It is provided only for reference.
 
@@ -91,9 +93,9 @@ It is provided only for reference.
 
 Since its first public release, many people have used this implementation
 for cool things and exciting projects. Not all of those were public.
-Also, I wasn't great at tracking. Still, there are a couple that may interest you:
+Also, I wasn't great at keeping track. Still, there are a couple that may interest you:
 
 * [AES-256 cryptographic library for Python](https://github.com/ostinelli/PyAES256) by Roberto Ostinelli
 * [ArduinoAES256](https://github.com/qistoph/ArduinoAES256) by Chris van Marle
 
-The chances are your project could be interesting. So do not hesitate to share.
+Chances are your project could be interesting. So do not hesitate to share.

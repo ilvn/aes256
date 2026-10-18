@@ -1,31 +1,22 @@
 //
 // A compact byte-oriented AES-256 implementation.
-// All lookup tables replaced with 'on the fly' calculations.
+// All lookup tables are replaced with on-the-fly calculations.
 //
 // Copyright (c) 2007-2011 Literatecode, http://www.literatecode.com
 // Copyright (c) 2022 Ilia Levin (ilia@levin.sg)
 //
 // Other contributors: Hal Finney.
 //
-// Permission to use, copy, modify, and distribute this software for any
-// purpose with or without fee is hereby granted, provided that the above
-// copyright notice and this permission notice appear in all copies.
-//
-// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-// ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-// OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+// This source code is licensed under the terms of the MIT license.
+// For a copy, see <https://opensource.org/licenses/MIT>.
 
 #include "aes256.h"
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
 
-// We use the compact version with runtime calculations by default. You may
-// want to define BACK_TO_TABLES for a pre-calculated faster version.
+// We use the compact version with runtime calculations by default. Define
+// BACK_TO_TABLES for a faster version with pre-calculated tables.
 
 // #define BACK_TO_TABLES
 
@@ -37,11 +28,11 @@
 
 // -----------------------------------------------------------------------------
 GFC_FN_
-rj_xtime(u8_t x)
+gf_xtime(u8_t x)
 {
     u8_t y = 0xff & (x << 1);
     return (x & 0x80) ? (y ^ 0x1b) : y;
-} // rj_xtime
+} // gf_xtime
 
 #ifdef BACK_TO_TABLES // use pre-calculated tables
 
@@ -119,7 +110,7 @@ static const u8_t sboxinv[256] = {
 
 #else // use tableless subroutines
 
-#define SHL8(x, n) ((0xff & ((x) << (n))) | ((x) >> (8 - (n)))) // avoid n = 0
+#define ROTL8(x, n) ((0xff & ((x) << (n))) | ((x) >> (8 - (n))))
 
 // -----------------------------------------------------------------------------
 GFC_FN_
@@ -131,7 +122,7 @@ gf_mul(u8_t a, u8_t b) // multiply in GF(2^8)
         if (b & 1) {
             r ^= a;
         }
-        a = rj_xtime(a);
+        a = gf_xtime(a);
         b >>= 1;
     }
 
@@ -168,22 +159,22 @@ rj_sbox(u8_t x)
 {
     u8_t y = gf_mulinv(x), sb = y;
 
-    sb ^= y = SHL8(y, 1);
-    sb ^= y = SHL8(y, 1);
-    sb ^= y = SHL8(y, 1);
+    sb ^= y = ROTL8(y, 1);
+    sb ^= y = ROTL8(y, 1);
+    sb ^= y = ROTL8(y, 1);
 
-    return (sb ^ SHL8(y, 1) ^ 0x63);
+    return (sb ^ ROTL8(y, 1) ^ 0x63);
 } // rj_sbox
 
 // -----------------------------------------------------------------------------
 GFC_FN_
 rj_sbox_inv(u8_t x)
 {
-    u8_t y = (x ^ 0x63), sb = y = SHL8(y, 1);
+    u8_t y = (x ^ 0x63), sb = y = ROTL8(y, 1);
 
-    sb ^= y = SHL8(y, 2);
+    sb ^= y = ROTL8(y, 2);
 
-    return gf_mulinv(sb ^ SHL8(y, 3));
+    return gf_mulinv(sb ^ ROTL8(y, 3));
 } // rj_sbox_inv
 
 #endif // BACK_TO_TABLES
@@ -200,16 +191,16 @@ subBytes(u8_t *buf)
 
 // -----------------------------------------------------------------------------
 AES_CORE_FN_
-subBytes_inv(u8_t *buf)
+subBytesInv(u8_t *buf)
 {
     for (u8_t i = 0; i < 16; i++) {
         buf[i] = rj_sbox_inv(buf[i]);
     }
-} // subBytes_inv
+} // subBytesInv
 
 // -----------------------------------------------------------------------------
 AES_CORE_FN_
-addRoundKey(u8_t *buf, u8_t *key)
+addRoundKey(u8_t *buf, const u8_t *key)
 {
     for (u8_t i = 0; i < 16; i++) {
         buf[i] ^= key[i];
@@ -218,19 +209,19 @@ addRoundKey(u8_t *buf, u8_t *key)
 
 // -----------------------------------------------------------------------------
 AES_CORE_FN_
-addRoundKey_cpy(u8_t *buf, u8_t *key, u8_t *cpk)
+addRoundKeyCpy(u8_t *buf, const u8_t *key, u8_t *cpk)
 {
     for (u8_t i = 0; i < 16; i++) {
         buf[i] ^= (cpk[i] = key[i]);
         cpk[16 + i] = key[16 + i];
     }
-} // addRoundKey_cpy
+} // addRoundKeyCpy
 
 // -----------------------------------------------------------------------------
 AES_CORE_FN_
 shiftRows(u8_t *buf)
 {
-    u8_t i, j; // to make it potentially parallelable :)
+    u8_t i, j; // to make it potentially parallelizable :)
 
     i = buf[1];
     buf[1] = buf[5];
@@ -255,7 +246,7 @@ shiftRows(u8_t *buf)
 
 // -----------------------------------------------------------------------------
 AES_CORE_FN_
-shiftRows_inv(u8_t *buf)
+shiftRowsInv(u8_t *buf)
 {
     u8_t i, j; // similar to shiftRows :)
 
@@ -278,7 +269,7 @@ shiftRows_inv(u8_t *buf)
     j = buf[6];
     buf[6] = buf[14];
     buf[14] = j;
-} // shiftRows_inv
+} // shiftRowsInv
 
 // -----------------------------------------------------------------------------
 AES_CORE_FN_
@@ -292,16 +283,16 @@ mixColumns(u8_t *buf)
         c = buf[i + 2];
         d = buf[i + 3];
         e = a ^ b ^ c ^ d;
-        buf[i] ^= e ^ rj_xtime(a ^ b);
-        buf[i + 1] ^= e ^ rj_xtime(b ^ c);
-        buf[i + 2] ^= e ^ rj_xtime(c ^ d);
-        buf[i + 3] ^= e ^ rj_xtime(d ^ a);
+        buf[i] ^= e ^ gf_xtime(a ^ b);
+        buf[i + 1] ^= e ^ gf_xtime(b ^ c);
+        buf[i + 2] ^= e ^ gf_xtime(c ^ d);
+        buf[i + 3] ^= e ^ gf_xtime(d ^ a);
     }
 } // mixColumns
 
 // -----------------------------------------------------------------------------
 AES_CORE_FN_
-mixColumns_inv(u8_t *buf)
+mixColumnsInv(u8_t *buf)
 {
     u8_t a, b, c, d, e, x, y, z;
 
@@ -311,15 +302,15 @@ mixColumns_inv(u8_t *buf)
         c = buf[i + 2];
         d = buf[i + 3];
         e = a ^ b ^ c ^ d;
-        z = rj_xtime(e);
-        x = e ^ rj_xtime(rj_xtime(z ^ a ^ c));
-        y = e ^ rj_xtime(rj_xtime(z ^ b ^ d));
-        buf[i] ^= x ^ rj_xtime(a ^ b);
-        buf[i + 1] ^= y ^ rj_xtime(b ^ c);
-        buf[i + 2] ^= x ^ rj_xtime(c ^ d);
-        buf[i + 3] ^= y ^ rj_xtime(d ^ a);
+        z = gf_xtime(e);
+        x = e ^ gf_xtime(gf_xtime(z ^ a ^ c));
+        y = e ^ gf_xtime(gf_xtime(z ^ b ^ d));
+        buf[i] ^= x ^ gf_xtime(a ^ b);
+        buf[i + 1] ^= y ^ gf_xtime(b ^ c);
+        buf[i + 2] ^= x ^ gf_xtime(c ^ d);
+        buf[i + 3] ^= y ^ gf_xtime(d ^ a);
     }
-} // mixColumns_inv
+} // mixColumnsInv
 
 // -----------------------------------------------------------------------------
 AES_CORE_FN_
@@ -329,7 +320,7 @@ expandEncKey(u8_t *k, u8_t *rc)
     k[1] ^= rj_sbox(k[30]);
     k[2] ^= rj_sbox(k[31]);
     k[3] ^= rj_sbox(k[28]);
-    *rc = rj_xtime(*rc);
+    *rc = gf_xtime(*rc);
 
     for (u8_t i = 4; i < 16; i += 4) {
         k[i] ^= k[i - 4];
@@ -383,16 +374,16 @@ expandDecKey(u8_t *k, u8_t *rc)
 
 // -----------------------------------------------------------------------------
 u8_t
-aes256_init(aes256_context_t *ctx, aes256_key_t *key)
+aes256_init(aes256_context_t *ctx, const aes256_key_t *key)
 {
     if ((NULL == ctx) || (NULL == key)) {
         return AES_ERROR;
     }
 
-    ctx->enckey = ctx->deckey = *key;
+    ctx->rk_first = ctx->rk_last = *key;
 
     for (u8_t i = 0, rcon = 1; i < 7; i++) {
-        expandEncKey(ctx->deckey.raw, &rcon);
+        expandEncKey(ctx->rk_last.raw, &rcon);
     }
 
     return AES_SUCCESS;
@@ -403,14 +394,18 @@ aes256_init(aes256_context_t *ctx, aes256_key_t *key)
 u8_t
 aes256_done(aes256_context_t *ctx)
 {
-    const aes256_key_t zero = {0};
-
-    if (NULL != ctx) {
-        ctx->key = ctx->enckey = ctx->deckey = zero;
-        return AES_SUCCESS;
+    if (NULL == ctx) {
+        return AES_ERROR;
     }
 
-    return AES_ERROR;
+    volatile u8_t *rk = ctx->rk.raw;
+    volatile u8_t *first = ctx->rk_first.raw;
+    volatile u8_t *last = ctx->rk_last.raw;
+
+    for (u8_t i = 0; i < sizeof(ctx->rk.raw); i++) {
+        rk[i] = first[i] = last[i] = 0;
+    }
+    return AES_SUCCESS;
 } // aes256_done
 
 
@@ -423,27 +418,27 @@ aes256_encrypt_ecb(aes256_context_t *ctx, aes256_blk_t *buf)
     }
 
     u8_t rcon = 1;
-    addRoundKey_cpy(buf->raw, ctx->enckey.raw, ctx->key.raw);
+    addRoundKeyCpy(buf->raw, ctx->rk_first.raw, ctx->rk.raw);
 
     for (u8_t i = 1; i < 14; ++i) {
         subBytes(buf->raw);
         shiftRows(buf->raw);
         mixColumns(buf->raw);
         if (1 == (i & 1)) {
-            addRoundKey(buf->raw, &ctx->key.raw[16]);
+            addRoundKey(buf->raw, &ctx->rk.raw[16]);
         } else {
-            expandEncKey(ctx->key.raw, &rcon);
-            addRoundKey(buf->raw, ctx->key.raw);
+            expandEncKey(ctx->rk.raw, &rcon);
+            addRoundKey(buf->raw, ctx->rk.raw);
         }
     }
 
     subBytes(buf->raw);
     shiftRows(buf->raw);
-    expandEncKey(ctx->key.raw, &rcon);
-    addRoundKey(buf->raw, ctx->key.raw);
+    expandEncKey(ctx->rk.raw, &rcon);
+    addRoundKey(buf->raw, ctx->rk.raw);
 
     return AES_SUCCESS;
-} // aes256_encrypt
+} // aes256_encrypt_ecb
 
 // -----------------------------------------------------------------------------
 u8_t
@@ -453,23 +448,23 @@ aes256_decrypt_ecb(aes256_context_t *ctx, aes256_blk_t *buf)
         return AES_ERROR;
     }
 
-    addRoundKey_cpy(buf->raw, ctx->deckey.raw, ctx->key.raw);
-    shiftRows_inv(buf->raw);
-    subBytes_inv(buf->raw);
+    addRoundKeyCpy(buf->raw, ctx->rk_last.raw, ctx->rk.raw);
+    shiftRowsInv(buf->raw);
+    subBytesInv(buf->raw);
 
     for (u8_t i = 14, rcon = 0x80; --i;) {
         if (1 == (i & 1)) {
-            expandDecKey(ctx->key.raw, &rcon);
-            addRoundKey(buf->raw, &ctx->key.raw[16]);
+            expandDecKey(ctx->rk.raw, &rcon);
+            addRoundKey(buf->raw, &ctx->rk.raw[16]);
         } else {
-            addRoundKey(buf->raw, ctx->key.raw);
+            addRoundKey(buf->raw, ctx->rk.raw);
         }
-        mixColumns_inv(buf->raw);
-        shiftRows_inv(buf->raw);
-        subBytes_inv(buf->raw);
+        mixColumnsInv(buf->raw);
+        shiftRowsInv(buf->raw);
+        subBytesInv(buf->raw);
     }
 
-    addRoundKey(buf->raw, ctx->key.raw);
+    addRoundKey(buf->raw, ctx->rk.raw);
 
     return AES_SUCCESS;
-} // aes256_decrypt
+} // aes256_decrypt_ecb
